@@ -32,6 +32,7 @@ const createDbRoot = () => {
   });
 }
 
+// todo: check about using async-await here as file-reading is an async operation
 const fetchAllDbs = () => {
   if (!checkIfDbRootExists()) {
     createDbRoot();
@@ -79,6 +80,8 @@ export const dbMsgHandler = (evt, arg) => {
   
   switch (arg?.msgType) {
     case 'fetch-all-dbs': {
+      // todo: This is going to be a async operation
+      // probabaly will have to use async msg-ing 
       const dbFiles = fetchAllDbs();
       // now, send this file back to the caller
       break;
