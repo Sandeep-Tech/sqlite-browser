@@ -5,6 +5,10 @@
   & :last-child {
     margin-right: 0;
   }
+
+  &__new-db-creator {
+    display: inline-block;
+  }
 }
 
 .db {

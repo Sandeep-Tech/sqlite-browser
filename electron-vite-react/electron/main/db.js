@@ -40,16 +40,35 @@ const fetchAllDbs = () => {
 
   fs.readdir(DB_ROOT_PATH, (err, files) => {
     if (err) {
-      console.error('Failed to read directory:', Object.entries(err));
-      return;
+      console.error('Failed to read directory:', err);
+      return null;
     }  
     console.log(files);
-    // const sqliteFiles = files.filter(file => file.endsWith('.sqlite'));
-    // console.log('SQLite database files:', sqliteFiles);
+    const sqliteFiles = files.filter(file => file.endsWith('.db'));
+    return sqliteFiles;
   });
 };
 
+const createNewDb = (name) => {
+  if (!checkIfDbRootExists()) {
+    createDbRoot();
+  };
+  // open the database connection
+  let db = new sqlite3.Database(path.join(DB_ROOT_PATH, `${name}.db`), (err) => {
+    if (err) {
+      console.error(`Failed to create the new db - ${name}.`, err.message);
+    }
+    console.log(`Created a new database - ${name}`);
+  });
 
+  // close the database connection
+  db.close((err) => {
+    if (err) {
+      console.error(err.message);
+    }
+    console.log('Close the database connection.');
+  });
+}
 
 
 export const dbMsgHandler = (evt, arg) => {
@@ -60,8 +79,16 @@ export const dbMsgHandler = (evt, arg) => {
   
   switch (arg?.msgType) {
     case 'fetch-all-dbs': {
-      fetchAllDbs();
+      const dbFiles = fetchAllDbs();
+      // now, send this file back to the caller
       break;
+    }
+    case 'create-new-db': {
+      if (!arg.name) {
+        console.error('Unable to create a new db, name not supplied');
+        return;
+      }
+      createNewDb(arg.name);
     }
     default: break;
   }
