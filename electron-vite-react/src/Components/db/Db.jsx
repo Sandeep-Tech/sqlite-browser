@@ -20,15 +20,25 @@ function ToolBar({ handleClick }) {
 }
 
 
+
+
 function Db() {
   
+  const dbMsghandler = (evt, arg) => {
+    console.log
+  }
+
   useEffect(() => {
+    ipcRenderer.on('db', dbMsghandler);
+    return () => ipcRenderer.removeListener('db', dbMsghandler);
   }, []);
 
 
   const handleToolClick = (toolType) => {
+    console.log(ipcRenderer)
     switch (toolType) {
-      case 'show-all-db': {
+      case 'show-all-dbs': {
+        ipcRenderer.send('db', { msgType: 'fetch-all-dbs' });
         break;
       }
       case 'create-new-db': {
