@@ -1,0 +1,12 @@
+.toolbar {
+  & > * {
+    margin-right: 6px;
+  }
+  & :last-child {
+    margin-right: 0;
+  }
+}
+
+.db {
+  border: 1px solid red;
+}
