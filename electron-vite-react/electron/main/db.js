@@ -4,7 +4,7 @@ import fs from 'fs';
 
 // const dbPath = path.join(__dirname, '../mydatabase.sqlite');
 
-const DB_ROOT_PATH = path.join(__dirname, '../db-root');
+const DB_ROOT_PATH = path.join(__dirname, '../../db-root');
 
 const checkIfDbRootExists = () => {
   try {
