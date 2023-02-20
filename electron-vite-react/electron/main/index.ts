@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import { dbMsgHandler } from './db.js';
+import './sqlDb.js';
 
 // The built directory structure
 //

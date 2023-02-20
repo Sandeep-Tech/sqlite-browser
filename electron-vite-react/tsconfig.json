@@ -20,7 +20,7 @@
       "@/*": [
         "src/*"
       ],
-      "Components/*": ["./src/Components/*"],
+      "App/*": ["src/App/*"],
       "Interfaces/*": ["./src/Data/Interfaces", "./src/Data/Interfaces/*"],
       "Objects": ["./src/Data/Objects/*"],
       "Utilities/*": ["./src/Utilities"],

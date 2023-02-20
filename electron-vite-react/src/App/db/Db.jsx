@@ -39,9 +39,6 @@ function ToolBar({ handleClick }) {
   );
 }
 
-
-
-
 function Db() {
   
   const dbMsghandler = (evt, arg) => {
