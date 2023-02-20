@@ -41,10 +41,10 @@ export default defineConfig(({ command }) => {
           loadViteEnv(),
         ],
       }),
-      // Use Node.js API in the Renderer-process
-      renderer({
-        nodeIntegration: true,
-      }),
+      // // Use Node.js API in the Renderer-process
+      // renderer({
+      //   nodeIntegration: true,
+      // }),
     ],
     server: !!process.env.VSCODE_DEBUG ? (() => {
       const url = new URL(pkg.debug.env.VITE_DEV_SERVER_URL)

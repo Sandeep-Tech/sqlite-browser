@@ -50,8 +50,9 @@ async function createWindow() {
       // Warning: Enable nodeIntegration and disable contextIsolation is not secure in production
       // Consider using contextBridge.exposeInMainWorld
       // Read more on https://www.electronjs.org/docs/latest/tutorial/context-isolation
-      nodeIntegration: true,
-      contextIsolation: false,
+      // nodeIntegration: true,
+      // contextIsolation: false,
+      contextIsolation: true,
     },
   })
 
@@ -67,8 +68,8 @@ async function createWindow() {
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
 
-    // Attach listener for db concerned msgs
-    ipcMain.on('db', dbMsgHandler);
+    // // Attach listener for db concerned msgs
+    // ipcMain.on('db', dbMsgHandler);
   })
 
   // Make all links open with the browser, not with the application
