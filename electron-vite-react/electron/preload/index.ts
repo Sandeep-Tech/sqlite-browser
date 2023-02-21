@@ -98,4 +98,5 @@ setTimeout(removeLoading, 4999)
 contextBridge.exposeInMainWorld('mainAPI', {
   connectToDb: (details) => ipcRenderer.invoke('external-db', { type: 'connect' }),
   setupDbConfig: (details) => ipcRenderer.invoke('external-db', { type: 'setup-config', data: details }),
+  getDbConfig: () => ipcRenderer.invoke('app-data', { type: 'fetch-external-db-config' }),
 })

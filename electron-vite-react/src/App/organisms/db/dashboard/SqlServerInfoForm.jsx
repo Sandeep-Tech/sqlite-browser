@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from 'prop-types';
 import './SqlServerInfoForm.scss';
 import {
@@ -22,6 +22,16 @@ function SqlServerInfoForm({ onSubmit }) {
     }
   });
   form.useSubmit(() => onSubmit(form.values));
+
+  const fetchvaluesFromStore = async () => {
+    const dbConfig = await window.mainAPI.getDbConfig();
+     if (dbConfig) form.setValues(dbConfig);
+  };
+
+  useEffect(() => {
+    fetchvaluesFromStore();
+  }, []);
+
   return (
     <Form
       state={form}
@@ -65,4 +75,3 @@ SqlServerInfoForm.propTypes = {
 }
 
 export default SqlServerInfoForm;
-

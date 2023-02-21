@@ -61,7 +61,6 @@ class ExternalDb {
     try {
       const connection = await sql.connect(this.config);
       if (connection) return true;
-      // todo: fetch all the tables and relay them back to front end
     } catch (err) {
       console.log('Failed to connect to database');
       // err: { code, originalError, name }

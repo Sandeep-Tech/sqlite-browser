@@ -39,7 +39,8 @@ function DbDashboard({}) {
   const [content, setContent] = useState(<div />);
 
   const onServerDetailsFormSubmit = async (details) => {
-    const res = await window.mainAPI.setupDbConfig(details);
+    await window.mainAPI.setupDbConfig(details);
+    await window.mainAPI.saveDbConfig(details);
   };
 
   const onSidebarSelect = (sidebarItem) => {

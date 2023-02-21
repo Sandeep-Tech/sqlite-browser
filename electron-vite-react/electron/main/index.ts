@@ -3,6 +3,7 @@ import { release } from 'node:os'
 import { join } from 'node:path'
 import { dbMsgHandler } from './db.js';
 import externalDbActionsHandler from './externalDb.js';
+import appDataHandler from './appData.js';
 
 // The built directory structure
 //
@@ -79,6 +80,7 @@ async function createWindow() {
 
 app.whenReady().then(() => {
     ipcMain.handle('external-db', externalDbActionsHandler);
+    ipcMain.handle('app-data', appDataHandler);
     createWindow();
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
