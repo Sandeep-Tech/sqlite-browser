@@ -2,7 +2,7 @@ import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
 import { dbMsgHandler } from './db.js';
-import './sqlDb.js';
+import externalDbActionsHandler from './externalDb.js';
 
 // The built directory structure
 //
@@ -78,8 +78,7 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
-    // // Attach listener for db concerned msgs
-    // ipcMain.on('db', dbMsgHandler);
+    ipcMain.handle('external-db', externalDbActionsHandler);
     createWindow();
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()

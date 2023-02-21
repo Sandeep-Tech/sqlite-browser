@@ -1,4 +1,4 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer  } from 'electron';
 
 function domReady(condition: DocumentReadyState[] = ['complete', 'interactive']) {
   return new Promise(resolve => {
@@ -96,5 +96,5 @@ setTimeout(removeLoading, 4999)
 // ----------------------------------------------------------------------
 
 contextBridge.exposeInMainWorld('mainAPI', {
-  hello: () => 'hello from pre load script',
+  connectToDb: (details) => ipcRenderer.invoke('external-db', { type: 'connect', data: details }),
 })

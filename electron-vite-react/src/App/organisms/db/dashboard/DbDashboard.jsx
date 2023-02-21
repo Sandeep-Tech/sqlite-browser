@@ -4,11 +4,9 @@ import SqlServerInfoForm from "./SqlServerInfoForm";
 function DbDashboard({}) {
 
 
-  const onServerDetailsFormSubmit = (details) => {
-    let { servername, username, password, dbname, port } = details;
-
-    // forward them to the server
-    // get a response and display the results in the dashbaord
+  const onServerDetailsFormSubmit = async (details) => {
+    const res = await window.mainAPI.connectToDb(details);
+    console.log('DEBUG :: res in renderer ::', res);
   }
 
 
