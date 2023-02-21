@@ -5,7 +5,10 @@ function DbDashboard({}) {
 
 
   const onServerDetailsFormSubmit = (details) => {
-    console.log(details);
+    let { servername, username, password, dbname, port } = details;
+
+    // forward them to the server
+    // get a response and display the results in the dashbaord
   }
 
 

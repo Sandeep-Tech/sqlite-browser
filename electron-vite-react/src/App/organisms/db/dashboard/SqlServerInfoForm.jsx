@@ -50,12 +50,12 @@ function SqlServerInfoForm({ onSubmit }) {
       </div>
       <div className="form__field">
         <FormLabel name={form.names.port}>Port</FormLabel>
-        <FormInput name={form.names.port} required />
+        <FormInput name={form.names.port} required type="number" min={0} />
         <FormError name={form.names.port} />
       </div>
       <div className="form__buttons">
         <FormReset className="button secondary reset">Reset</FormReset>
-        <FormSubmit className="button">Add</FormSubmit>
+        <FormSubmit className="button">Connect</FormSubmit>
       </div>
     </Form>
   )
