@@ -1,0 +1,22 @@
+.form {
+  width: 300px;
+  border: 1px solid black;
+  padding: 1rem;
+  border-radius: .5rem;
+
+  &__field {
+    margin-bottom: 1rem;
+  }
+
+  &__buttons {
+    display: flex;
+
+    & > * {
+      margin-right: 1rem;
+    }
+    & :last-child {
+      margin-right: 0;
+    }
+  }
+}
+
