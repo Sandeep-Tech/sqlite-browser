@@ -55,7 +55,7 @@ function SqlServerInfoForm({ onSubmit }) {
       </div>
       <div className="form__buttons">
         <FormReset className="button secondary reset">Reset</FormReset>
-        <FormSubmit className="button">Connect</FormSubmit>
+        <FormSubmit className="button">Submit</FormSubmit>
       </div>
     </Form>
   )

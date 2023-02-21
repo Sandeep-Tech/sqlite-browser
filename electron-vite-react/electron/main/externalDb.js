@@ -51,6 +51,7 @@ class ExternalDb {
         port: port ?? 1433,
       }
     }
+    return this.config;
   }
 
 
@@ -70,6 +71,7 @@ class ExternalDb {
 
   handler = async (evt, action) => {
     switch (action.type) {
+      case 'setup-config': return this.setConfig(action.data);
       case 'connect': return this.handleConnect(action.data);
     }
   } 
