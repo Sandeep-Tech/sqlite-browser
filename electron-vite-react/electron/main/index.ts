@@ -68,9 +68,6 @@ async function createWindow() {
   // Test actively push message to the Electron-Renderer
   win.webContents.on('did-finish-load', () => {
     win?.webContents.send('main-process-message', new Date().toLocaleString())
-
-    // // Attach listener for db concerned msgs
-    // ipcMain.on('db', dbMsgHandler);
   })
 
   // Make all links open with the browser, not with the application
@@ -80,7 +77,20 @@ async function createWindow() {
   })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(() => {
+    // // Attach listener for db concerned msgs
+    // ipcMain.on('db', dbMsgHandler);
+    createWindow();
+    app.on('activate', () => {
+      const allWindows = BrowserWindow.getAllWindows()
+      if (allWindows.length) {
+        allWindows[0].focus()
+      } else {
+        createWindow()
+      }
+    })
+  }  
+)
 
 app.on('window-all-closed', () => {
   win = null
@@ -92,15 +102,6 @@ app.on('second-instance', () => {
     // Focus on the main window if the user tried to open another
     if (win.isMinimized()) win.restore()
     win.focus()
-  }
-})
-
-app.on('activate', () => {
-  const allWindows = BrowserWindow.getAllWindows()
-  if (allWindows.length) {
-    allWindows[0].focus()
-  } else {
-    createWindow()
   }
 })
 
