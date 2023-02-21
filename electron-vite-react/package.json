@@ -38,6 +38,7 @@
   },
   "dependencies": {
     "ariakit": "^2.0.0-next.43",
+    "electron-store": "^8.1.0",
     "eslint": "^8.34.0",
     "mssql": "^9.1.1",
     "prop-types": "^15.8.1",
