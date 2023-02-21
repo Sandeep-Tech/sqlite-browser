@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './DbDashboard.scss';
 
 import Button from '../../../atoms/button/Button';
@@ -6,7 +6,7 @@ import SqlServerInfoForm from "./SqlServerInfoForm";
 
 const sidebarItems = [{
   text: 'Sql Server Settings',
-  type: 'sql-server-details',
+  type: 'sql-server-settings',
 }, {
   text: 'Monitor',
   type: 'monitor',
@@ -39,12 +39,12 @@ function DbDashboard({}) {
   const [content, setContent] = useState(<div />);
 
   const onServerDetailsFormSubmit = async (details) => {
-    const res = await window.mainAPI.setupConfig(details);
+    const res = await window.mainAPI.setupDbConfig(details);
   };
 
   const onSidebarSelect = (sidebarItem) => {
     switch (sidebarItem.type) {
-      case 'sql-server-details': {
+      case 'sql-server-settings': {
         setContent(<SqlServerInfoForm onSubmit={onServerDetailsFormSubmit} />);
         break;
       }
@@ -55,6 +55,10 @@ function DbDashboard({}) {
       default: setContent(<div />);
     }
   }
+
+  useEffect(() => {
+    onSidebarSelect(sidebarItems.find((item) => item.type === 'sql-server-settings'));
+  }, []);
 
   return (
     <div className="dashboard">
