@@ -4,9 +4,6 @@ import './DbDashboard.scss';
 import Button from '../../../atoms/button/Button';
 import SqlServerInfoForm from "./SqlServerInfoForm";
 
-
-
-
 const sidebarItems = [{
   text: 'Sql Server Settings',
   type: 'sql-server-details',
@@ -58,7 +55,6 @@ function DbDashboard({}) {
       default: setContent(<div />);
     }
   }
-
 
   return (
     <div className="dashboard">
