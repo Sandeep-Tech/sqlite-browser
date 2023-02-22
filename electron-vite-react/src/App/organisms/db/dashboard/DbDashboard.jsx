@@ -38,6 +38,7 @@ function Sidebar({ onSelect }) {
 
 function Monitor() {
   const [externalDbConfig, setExternalDbConfig] = useState(null);
+  const [monitoringCritria, setMonitoringCriteria] = useState(null);
   const [error, setError] = useState(null);
   const [notif, setNotif] = useState(null);
 
@@ -47,8 +48,8 @@ function Monitor() {
       queryrate: 5,
     }
   });
-  form.useSubmit(() => {
-    alert(JSON.stringify(form.values));
+  form.useSubmit(async () => {
+    await window.mainAPI.saveMonitoringCriteria(form.values);
   });
 
   const callbackWithTimedCleanup = (callback, cleanup, timeout = 1500) => {
@@ -58,7 +59,12 @@ function Monitor() {
 
   const fetchvaluesFromStore = async () => {
     const dbConfig = await window.mainAPI.getDbConfig();
+    const savedMonitoringCriteria = await window.mainAPI.getMonitoringCriteria();
      if (dbConfig) setExternalDbConfig(dbConfig);
+     if (savedMonitoringCriteria) {
+      setMonitoringCriteria(savedMonitoringCriteria);
+      form.setValues(savedMonitoringCriteria);
+    };
   };
   useEffect(() => {
     fetchvaluesFromStore();
@@ -103,7 +109,7 @@ function Monitor() {
           </div>
           <div className="form__field">
             <FormLabel name={form.names.queryrate}>Query rate (in seconds)</FormLabel>
-            <FormInput name={form.names.queryrate} required />
+            <FormInput name={form.names.queryrate} required type="number" min={1} />
             <FormError name={form.names.queryrate} />
           </div>
           <div className="form__buttons">

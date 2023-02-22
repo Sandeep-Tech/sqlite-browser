@@ -122,9 +122,19 @@ const testConnection = async () => {
     return false;
   }
 }
+const saveMonitoringCriteria = (criteria) => {
+  const res = ipcRenderer.invoke('app-data', {
+    type: 'save-monitoring-criteria',
+    data: criteria,
+  });
+  if (res) return true;
+  return false;
+}
 
 contextBridge.exposeInMainWorld('mainAPI', {
   testConnection: testConnection,
   getDbConfig: () => ipcRenderer.invoke('app-data', { type: 'fetch-external-db-config' }),
   saveDbConfig: handleSaveDbConfig,
+  getMonitoringCriteria: () => ipcRenderer.invoke('app-data', { type: 'fetch-monitoring-criteria' }),
+  saveMonitoringCriteria: saveMonitoringCriteria,
 })
