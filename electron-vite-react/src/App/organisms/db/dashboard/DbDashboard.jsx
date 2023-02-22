@@ -51,6 +51,7 @@ function MonitorContent({ monitoringCriteria }) {
 
   const fetchTable = () => {
     // send a msg to the backend to fetch the table
+    window.mainAPI.fetchTable();
   };
 
   useEffect(() => {
