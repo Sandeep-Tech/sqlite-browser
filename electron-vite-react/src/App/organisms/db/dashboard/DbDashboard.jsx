@@ -3,6 +3,15 @@ import './DbDashboard.scss';
 
 import Button from '../../../atoms/button/Button';
 import SqlServerInfoForm from "./SqlServerInfoForm";
+import {
+  Form,
+  FormInput,
+  FormLabel,
+  FormError,
+  FormReset,
+  FormSubmit,
+  useFormState,
+} from '../../../atoms/form/Form';
 
 const sidebarItems = [{
   text: 'Sql Server Settings',
@@ -31,6 +40,16 @@ function Monitor() {
   const [externalDbConfig, setExternalDbConfig] = useState(null);
   const [error, setError] = useState(null);
   const [notif, setNotif] = useState(null);
+
+  const form = useFormState({ 
+    defaultValues: {
+      tablename: "",
+      queryrate: 15,
+    }
+  });
+  form.useSubmit(() => {
+    alert(JSON.stringify(form.values));
+  });
 
   const callbackWithTimedCleanup = (callback, cleanup, timeout = 1500) => {
     callback();
@@ -62,7 +81,7 @@ function Monitor() {
   };
 
   return (
-    <div>
+    <div className="monitor">
       {error && <p className="error-msg">{error.msg}</p>}
       {notif && <p className="notif-msg">{notif.msg}</p>}
       {externalDbConfig ? (
@@ -71,8 +90,27 @@ function Monitor() {
           <Button onClick={testConnection} style={{ display: 'inline-block' }}>Test</Button>
         </div>
       ) : null}
-      <div>
-
+      <div className="monitor-screen">
+        <Form
+          state={form}
+          aria-labelledby="table-name-and-query-rate-form"
+          className="form"
+        >
+          <div className="form__field">
+            <FormLabel name={form.names.tablename}>Table name</FormLabel>
+            <FormInput name={form.names.tablename} required />
+            <FormError name={form.names.tablename} />
+          </div>
+          <div className="form__field">
+            <FormLabel name={form.names.queryrate}>Query rate (in seconds)</FormLabel>
+            <FormInput name={form.names.queryrate} required />
+            <FormError name={form.names.queryrate} />
+          </div>
+          <div className="form__buttons">
+            <FormReset>Reset</FormReset>
+            <FormSubmit>Submit</FormSubmit>
+          </div>
+        </Form>
       </div>
     </div>
   );

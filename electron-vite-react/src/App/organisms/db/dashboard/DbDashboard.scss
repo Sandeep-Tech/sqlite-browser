@@ -32,28 +32,37 @@
     font-size: 3rem;
     margin-bottom: 1rem;
   }
-}
 
-.error-msg {
-  color: red;
-  background-color: antiquewhite;
-  padding: .5rem;
-  border-radius: .5rem;
-}
+  .monitor {
+    & > * {
+      margin-bottom: 1rem;
+    }
+    & :last-child {
+      margin-bottom: 0;
+    }
 
-.notif-msg {
-  color: black;
-  background-color: antiquewhite;
-  padding: .5rem;
-  border-radius: .5rem;
-}
-
-.test-connection {
-  background-color: antiquewhite;
-  padding: .5rem;
-  border-radius: .5rem;
-  &__prompt {
-    margin-right: 1rem;
-    font-size: 1.3rem;
+    .error-msg {
+      color: red;
+      background-color: antiquewhite;
+      padding: .5rem;
+      border-radius: .5rem;
+    }
+    
+    .notif-msg {
+      color: black;
+      background-color: antiquewhite;
+      padding: .5rem;
+      border-radius: .5rem;
+    }
+    
+    .test-connection {
+      background-color: antiquewhite;
+      padding: .5rem;
+      border-radius: .5rem;
+      &__prompt {
+        margin-right: 1rem;
+        font-size: 1.3rem;
+      }
+    }
   }
 }
