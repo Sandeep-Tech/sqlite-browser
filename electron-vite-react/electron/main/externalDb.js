@@ -24,6 +24,7 @@ class ExternalDb {
         port: 1433,
       }
     }
+    this.connection = null;
   }
 
   setConfig = ({
@@ -55,24 +56,30 @@ class ExternalDb {
     return this.config;
   }
 
-
-  handleConnect = async (details) => {
-    this.setConfig(details);
-    
+  connect = async () => {
     try {
       const connection = await sql.connect(this.config);
-      if (connection) return true;
+      if (connection) {
+        this.connection = connection;
+        console.log(`connected to external db server ${this.config.server}`);
+        return true;
+      }
     } catch (err) {
       console.log('Failed to connect to database');
       // err: { code, originalError, name }
-      return err;
+      throw new Error(err);
     }
+  }
+
+  disconnect = async () => {
+    if (this.connection) this.connection.close();
   }
 
   handler = async (evt, action) => {
     switch (action.type) {
       case 'set-config': return this.setConfig(action.data);
-      case 'connect': return this.handleConnect(action.data);
+      case 'connect': return this.connect();
+      case 'disconnect': return this.disconnect();
     }
   } 
 }
@@ -83,7 +90,7 @@ const init = () => {
   // Fetch config from local Store and populate
   const dbConfig = appData(undefined, { type: 'fetch-external-db-config' });
   if (dbConfig) externaldb.handler(undefined, {
-    type: 'setup-config',
+    type: 'set-config',
     data: dbConfig
   });
 }

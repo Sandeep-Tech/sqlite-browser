@@ -22,7 +22,7 @@ class AppData {
       } catch (err) {
         console.error('Error: failed to save external db config to disk');
         console.error(err);
-        return err;
+        return null;
       }
     }
   };

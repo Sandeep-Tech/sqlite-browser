@@ -28,9 +28,49 @@ function Sidebar({ onSelect }) {
 }
 
 function Monitor() {
+  const [externalDbConfig, setExternalDbConfig] = useState(null);
+  const [error, setError] = useState(null);
+  const [notif, setNotif] = useState(null);
+
+  const callbackWithTimedCleanup = (callback, cleanup, timeout = 1500) => {
+    callback();
+    setTimeout(() => { cleanup(); }, timeout);
+  };
+
+  const fetchvaluesFromStore = async () => {
+    const dbConfig = await window.mainAPI.getDbConfig();
+     if (dbConfig) setExternalDbConfig(dbConfig);
+  };
+  useEffect(() => {
+    fetchvaluesFromStore();
+  }, []);
+
+  const testConnection = async () => {
+    const isAbleToConnect = await window.mainAPI.testConnection();
+    if (isAbleToConnect) {
+      callbackWithTimedCleanup(
+        () => setNotif({ msg: 'Connection tested successfully...' }),
+        () => setNotif(null),
+      );
+    } else {
+      callbackWithTimedCleanup(
+        () => setError({ msg: 'Failed to connect to the external DB, maybe the credentials are incorrect' }),
+        () => setError(null),
+        3000,
+      );
+    }
+  };
+
   return (
     <div>
-      monitor
+      {error && <p className="error-msg">{error.msg}</p>}
+      {notif && <p className="notif-msg">{notif.msg}</p>}
+      {externalDbConfig ? (
+        <div>
+          <p className="test-prompt">Click the button to test the connection to external db</p>
+          <Button onClick={testConnection}>Test</Button>
+        </div>
+      ) : null}
     </div>
   );
 }
