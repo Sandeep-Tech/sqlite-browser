@@ -47,3 +47,13 @@
   padding: .5rem;
   border-radius: .5rem;
 }
+
+.test-connection {
+  background-color: antiquewhite;
+  padding: .5rem;
+  border-radius: .5rem;
+  &__prompt {
+    margin-right: 1rem;
+    font-size: 1.3rem;
+  }
+}

@@ -66,11 +66,14 @@ function Monitor() {
       {error && <p className="error-msg">{error.msg}</p>}
       {notif && <p className="notif-msg">{notif.msg}</p>}
       {externalDbConfig ? (
-        <div>
-          <p className="test-prompt">Click the button to test the connection to external db</p>
-          <Button onClick={testConnection}>Test</Button>
+        <div className="test-connection">
+          <span className="test-connection__prompt">Click the button to test the connection to external db</span>
+          <Button onClick={testConnection} style={{ display: 'inline-block' }}>Test</Button>
         </div>
       ) : null}
+      <div>
+
+      </div>
     </div>
   );
 }
