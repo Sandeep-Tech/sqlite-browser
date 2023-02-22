@@ -95,9 +95,24 @@ setTimeout(removeLoading, 4999)
 
 // ----------------------------------------------------------------------
 
+
+const handleSaveDbConfig = (details) => {
+  const isSaved = ipcRenderer.invoke('app-data', {
+    type: 'save-external-db-config',
+    data: details
+  });
+  ipcRenderer.invoke('external-db',{
+    type: 'setup-config',
+    data: details
+  });
+  if (isSaved) return true;
+  return false;
+}
+
+
 contextBridge.exposeInMainWorld('mainAPI', {
-  connectToDb: (details) => ipcRenderer.invoke('external-db', { type: 'connect' }),
-  setupDbConfig: (details) => ipcRenderer.invoke('external-db', { type: 'setup-config', data: details }),
+  // connectToDb: (details) => ipcRenderer.invoke('external-db', { type: 'connect' }),
+  // setupDbConfig: (details) => ipcRenderer.invoke('external-db', { type: 'setup-config', data: details }),
   getDbConfig: () => ipcRenderer.invoke('app-data', { type: 'fetch-external-db-config' }),
-  saveDbConfig: (details) => ipcRenderer.invoke('app-data', { type: 'save-external-db-config', data: details }),
+  saveDbConfig: handleSaveDbConfig,
 })

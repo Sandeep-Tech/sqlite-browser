@@ -39,7 +39,6 @@ function DbDashboard({}) {
   const [content, setContent] = useState(<div />);
 
   const onServerDetailsFormSubmit = async (details) => {
-    await window.mainAPI.setupDbConfig(details);
     await window.mainAPI.saveDbConfig(details);
   };
 

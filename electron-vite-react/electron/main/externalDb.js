@@ -1,4 +1,5 @@
 import  sql from 'mssql';
+import appData from './appData';
 
 class ExternalDb {
   constructor() {
@@ -70,13 +71,23 @@ class ExternalDb {
 
   handler = async (evt, action) => {
     switch (action.type) {
-      case 'setup-config': return this.setConfig(action.data);
+      case 'set-config': return this.setConfig(action.data);
       case 'connect': return this.handleConnect(action.data);
     }
   } 
 }
 
 const externaldb = new ExternalDb();
+
+const init = () => {
+  // Fetch config from local Store and populate
+  const dbConfig = appData(undefined, { type: 'fetch-external-db-config' });
+  if (dbConfig) externaldb.handler(undefined, {
+    type: 'setup-config',
+    data: dbConfig
+  });
+}
+init();
 
 // externalDbActionsHandler
 export default externaldb.handler;

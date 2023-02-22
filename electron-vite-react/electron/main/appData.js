@@ -16,8 +16,14 @@ class AppData {
 
   saveExternalDbConfig = (data) => {
     if (data) {
-      this.store.set(cons.appData.data.EXTERNAL_DB_CONFIG, data);
-      // todo: send update to front end
+      try {
+        this.store.set(cons.appData.data.EXTERNAL_DB_CONFIG, data);
+        return true;
+      } catch (err) {
+        console.error('Error: failed to save external db config to disk');
+        console.error(err);
+        return err;
+      }
     }
   };
 
