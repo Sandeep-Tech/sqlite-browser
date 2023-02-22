@@ -1,9 +1,9 @@
 import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron'
 import { release } from 'node:os'
 import { join } from 'node:path'
-import { dbMsgHandler } from './db.js';
 import externalDbActionsHandler from './externalDb.js';
-import appDataHandler from './appData.js';
+import appDataActionsHandler from './appData.js';
+import InternalDb from './internalDb.js';
 
 // The built directory structure
 //
@@ -43,6 +43,10 @@ const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
+const appDataPath = app.getPath('appData');
+const internalDbPath = join(appDataPath, '/internaldb/internal.db')
+const internalDb = new InternalDb(internalDbPath); 
+
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
@@ -78,9 +82,11 @@ async function createWindow() {
   })
 }
 
-app.whenReady().then(() => {
+app.whenReady().then(
+  () => {
+    ipcMain.handle('internal-db', internalDb.handler);
     ipcMain.handle('external-db', externalDbActionsHandler);
-    ipcMain.handle('app-data', appDataHandler);
+    ipcMain.handle('app-data', appDataActionsHandler);
     createWindow();
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
