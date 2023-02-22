@@ -1,9 +1,11 @@
 import  sql from 'mssql';
-import { fetchExternalDbConfig, saveExternalDbConfig } from './appData';
+import { fetchExternalDbConfig } from './appData';
 
 class ExternalDb {
   constructor() {
-    this.config = {};
+    this.setConfig = this.setConfig.bind(this);
+    this.connect = this.connect.bind(this);
+    this.disconnect = this.disconnect.bind(this);
     this.handler = this.handler.bind(this);
     this.config = {
       user: null,
@@ -81,7 +83,7 @@ class ExternalDb {
       case 'connect': return this.connect();
       case 'disconnect': return this.disconnect();
     }
-  } 
+  }
 }
 
 const externaldb = new ExternalDb();
