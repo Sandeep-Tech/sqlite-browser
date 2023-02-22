@@ -49,7 +49,7 @@ function Monitor() {
     const isAbleToConnect = await window.mainAPI.testConnection();
     if (isAbleToConnect) {
       callbackWithTimedCleanup(
-        () => setNotif({ msg: 'Connection tested successfully...' }),
+        () => setNotif({ msg: 'Connection established successfully...' }),
         () => setNotif(null),
       );
     } else {
