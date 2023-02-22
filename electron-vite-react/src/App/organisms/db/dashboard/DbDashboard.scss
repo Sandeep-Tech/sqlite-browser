@@ -15,7 +15,8 @@
 }
 
 .sidebar-content {
-  padding: 1rem;;
+  padding: 1rem;
+  width: 100%;
 }
 
 .dashboard {
@@ -64,5 +65,22 @@
         font-size: 1.3rem;
       }
     }
+    
+    &__content {
+      &__toolbar {
+        display: flex;
+        padding: .5rem;
+        border-radius: .5rem;
+        background-color: antiquewhite;
+  
+        & > * {
+          margin-right: 1rem;
+        }
+        & :last-child {
+          margin-right: 0;
+        }
+      }
+    }
   }
+
 }

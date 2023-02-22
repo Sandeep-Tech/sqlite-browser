@@ -36,12 +36,8 @@ function Sidebar({ onSelect }) {
   );
 }
 
-function Monitor() {
-  const [externalDbConfig, setExternalDbConfig] = useState(null);
-  const [monitoringCritria, setMonitoringCriteria] = useState(null);
-  const [error, setError] = useState(null);
-  const [notif, setNotif] = useState(null);
-
+function MonitorContent({ monitoringCriteria }) {
+  const [content, setContent] = useState(<div />);
   const form = useFormState({ 
     defaultValues: {
       tablename: "",
@@ -52,22 +48,99 @@ function Monitor() {
     await window.mainAPI.saveMonitoringCriteria(form.values);
   });
 
+
+  const fetchTable = () => {
+    // send a msg to the backend to fetch the table
+  };
+
+  useEffect(() => {
+    if (!monitoringCriteria) return;
+    form.setValues(monitoringCriteria);
+
+    fetchTable();
+  }, [monitoringCriteria]);
+
+  const renderMonitoringCriteriaForm = () => (
+    <div className="monitor-screen">
+      <p>Monitoring Criteria</p>
+      <Form
+        state={form}
+        aria-labelledby="table-name-and-query-rate-form"
+        className="form"
+      >
+        <div className="form__field">
+          <FormLabel name={form.names.tablename}>Table name</FormLabel>
+          <FormInput name={form.names.tablename} required />
+          <FormError name={form.names.tablename} />
+        </div>
+        <div className="form__field">
+          <FormLabel name={form.names.queryrate}>Query rate (in seconds)</FormLabel>
+          <FormInput name={form.names.queryrate} required type="number" min={1} />
+          <FormError name={form.names.queryrate} />
+        </div>
+        <div className="form__buttons">
+          <FormReset>Reset</FormReset>
+          <FormSubmit>Submit</FormSubmit>
+        </div>
+      </Form>
+    </div>
+  );
+
+  const renderMonitoredTable = () => {
+    return (
+      <div className="monitor__content__table">
+        table
+      </div>
+    )
+  }
+
+  return (
+    <div className="monitor__content">
+      <div className="monitor__content__toolbar">
+        <Button
+          onClick={() => {
+            setContent(renderMonitoredTable())
+          }}
+        >
+          Table
+        </Button>
+        <Button
+          onClick={() => {
+            setContent(renderMonitoringCriteriaForm());
+          }}
+        >
+          Criteria
+        </Button>
+      </div>
+      {content}
+    </div>
+  );
+}
+
+function Monitor() {
+  const [externalDbConfig, setExternalDbConfig] = useState(null);
+  const [monitoringCriteria, setMonitoringCriteria] = useState(null);
+  const [error, setError] = useState(null);
+  const [notif, setNotif] = useState(null);
+
   const callbackWithTimedCleanup = (callback, cleanup, timeout = 1500) => {
     callback();
     setTimeout(() => { cleanup(); }, timeout);
   };
 
-  const fetchvaluesFromStore = async () => {
-    const dbConfig = await window.mainAPI.getDbConfig();
+  const init = async () => {
+    // fetch values from store and setup states
+    const savedDbConfig = await window.mainAPI.getDbConfig();
     const savedMonitoringCriteria = await window.mainAPI.getMonitoringCriteria();
-     if (dbConfig) setExternalDbConfig(dbConfig);
+
+     if (savedDbConfig) setExternalDbConfig(savedDbConfig);
+    
      if (savedMonitoringCriteria) {
       setMonitoringCriteria(savedMonitoringCriteria);
-      form.setValues(savedMonitoringCriteria);
     };
   };
   useEffect(() => {
-    fetchvaluesFromStore();
+    init();
   }, []);
 
   const testConnection = async () => {
@@ -86,38 +159,46 @@ function Monitor() {
     }
   };
 
+  const renderConnectionTester = () => (
+    <div className="test-connection">
+      <span className="test-connection__prompt">
+        Click the button to test the connection to external db
+      </span>
+      <Button onClick={testConnection} style={{ display: 'inline-block' }}>Test</Button>
+    </div>
+  );
+
+  // const renderMonitorContent = () => (
+  //   <div className="monitor__content">
+  //     <div className="monitor__content__toolbar">
+  //       <Button
+  //         onClick={() => {
+  //           setContent(renderMonitoredTable())
+  //         }}
+  //       >
+  //         Table
+  //       </Button>
+  //       <Button
+  //         onClick={() => {
+  //           setContent(renderMonitoringCriteriaForm());
+  //         }}
+  //       >
+  //         Criteria
+  //       </Button>
+  //     </div>
+  //     {content}
+  //   </div>
+  // );
+
   return (
     <div className="monitor">
       {error && <p className="error-msg">{error.msg}</p>}
       {notif && <p className="notif-msg">{notif.msg}</p>}
-      {externalDbConfig ? (
-        <div className="test-connection">
-          <span className="test-connection__prompt">Click the button to test the connection to external db</span>
-          <Button onClick={testConnection} style={{ display: 'inline-block' }}>Test</Button>
-        </div>
-      ) : null}
-      <div className="monitor-screen">
-        <Form
-          state={form}
-          aria-labelledby="table-name-and-query-rate-form"
-          className="form"
-        >
-          <div className="form__field">
-            <FormLabel name={form.names.tablename}>Table name</FormLabel>
-            <FormInput name={form.names.tablename} required />
-            <FormError name={form.names.tablename} />
-          </div>
-          <div className="form__field">
-            <FormLabel name={form.names.queryrate}>Query rate (in seconds)</FormLabel>
-            <FormInput name={form.names.queryrate} required type="number" min={1} />
-            <FormError name={form.names.queryrate} />
-          </div>
-          <div className="form__buttons">
-            <FormReset>Reset</FormReset>
-            <FormSubmit>Submit</FormSubmit>
-          </div>
-        </Form>
-      </div>
+      {
+        (!monitoringCriteria)
+        ? renderConnectionTester() 
+        : <MonitorContent monitoringCriteria={monitoringCriteria}/>
+      }
     </div>
   );
 }
