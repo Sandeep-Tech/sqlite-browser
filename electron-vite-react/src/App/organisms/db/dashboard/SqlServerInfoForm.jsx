@@ -64,8 +64,8 @@ function SqlServerInfoForm({ onSubmit }) {
         <FormError name={form.names.port} />
       </div>
       <div className="form__buttons">
-        <FormReset className="button secondary reset">Reset</FormReset>
-        <FormSubmit className="button">Submit</FormSubmit>
+        <FormReset>Reset</FormReset>
+        <FormSubmit>Submit</FormSubmit>
       </div>
     </Form>
   )
