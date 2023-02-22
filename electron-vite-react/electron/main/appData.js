@@ -54,4 +54,15 @@ class AppData {
 }
 
 const appData = new AppData();
+const fetchExternalDbConfig = appData.fetchExternalDbConfig;
+const saveExternalDbConfig = appData.saveExternalDbConfig;
+const fetchMonitoringCriteria = appData.fetchMonitoringCriteria;
+const saveMonitoringCriteria = appData.saveMonitoringCriteria;
+
+export {
+  fetchExternalDbConfig,
+  saveExternalDbConfig,
+  fetchMonitoringCriteria,
+  saveMonitoringCriteria,
+};
 export default appData.handler;

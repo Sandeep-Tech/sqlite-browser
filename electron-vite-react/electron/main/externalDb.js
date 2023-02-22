@@ -1,5 +1,5 @@
 import  sql from 'mssql';
-import appData from './appData';
+import { fetchExternalDbConfig, saveExternalDbConfig } from './appData';
 
 class ExternalDb {
   constructor() {
@@ -88,11 +88,8 @@ const externaldb = new ExternalDb();
 
 const init = () => {
   // Fetch config from local Store and populate
-  const dbConfig = appData(undefined, { type: 'fetch-external-db-config' });
-  if (dbConfig) externaldb.handler(undefined, {
-    type: 'set-config',
-    data: dbConfig
-  });
+  const savedExternalDbConfig = fetchExternalDbConfig();
+  if (savedExternalDbConfig) externaldb.setConfig(savedExternalDbConfig);
 }
 init();
 
