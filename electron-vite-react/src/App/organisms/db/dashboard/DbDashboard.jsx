@@ -44,7 +44,7 @@ function Monitor() {
   const form = useFormState({ 
     defaultValues: {
       tablename: "",
-      queryrate: 15,
+      queryrate: 5,
     }
   });
   form.useSubmit(() => {
