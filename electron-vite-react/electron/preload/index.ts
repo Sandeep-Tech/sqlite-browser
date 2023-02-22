@@ -124,7 +124,6 @@ const testConnection = async () => {
 }
 
 contextBridge.exposeInMainWorld('mainAPI', {
-  // setupDbConfig: (details) => ipcRenderer.invoke('external-db', { type: 'setup-config', data: details }),
   testConnection: testConnection,
   getDbConfig: () => ipcRenderer.invoke('app-data', { type: 'fetch-external-db-config' }),
   saveDbConfig: handleSaveDbConfig,
