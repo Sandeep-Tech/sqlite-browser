@@ -3,7 +3,8 @@ import { release } from 'node:os'
 import { join } from 'node:path'
 import externalDbActionsHandler from './externalDb.js';
 import appDataActionsHandler from './appData.js';
-import InternalDb from './internalDb.js';
+import internalDb from './internalDb.js';
+import monitor from './monitor.js';
 
 // The built directory structure
 //
@@ -42,11 +43,10 @@ let win: BrowserWindow | null = null
 const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
-
 const appDataPath = app.getPath('appData');
 const internalDbPath = join(appDataPath, '/internaldb/')
-const internalDb = new InternalDb(internalDbPath); 
-
+internalDb.setPath(internalDbPath);
+console.log(internalDbPath)
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
@@ -87,6 +87,7 @@ app.whenReady().then(
     ipcMain.handle('internal-db', internalDb.handler);
     ipcMain.handle('external-db', externalDbActionsHandler);
     ipcMain.handle('app-data', appDataActionsHandler);
+    monitor();
     createWindow();
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
