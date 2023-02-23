@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-import { fetchMonitoringCriteria, fetchExternalDbConfig } from './appData';
+import { fetchMonitoringCriteria } from './appData';
 
 class InternalDb {
   constructor(path) {
@@ -11,10 +11,7 @@ class InternalDb {
     this.fetchDb = this.fetchDb.bind(this);
     this.fetchTable = this.fetchTable.bind(this);
     this.path = path;
-  }
-
-  setPath = (path) => {
-    this.path = path;
+    this.db = null;
   }
 
   doesRootPathExist = () => {
@@ -85,46 +82,18 @@ class InternalDb {
     const monitoringCriteria = fetchMonitoringCriteria();
 
     if (db && monitoringCriteria) {
+      // use a meta table to determine with current extrnal db config that the table in sqlite is the same
       const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
       db.all(selectStmt, [], (err, rows) => {
-        db.close();
         if (err) {
           console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
           console.error(err);
-          return null;
         }
+        // process rows
         console.log(rows);
-        return rows;
       });
     }
   };
-
-  saveToChoosenTable = async (data) => {
-    const externalDbConfig = fetchExternalDbConfig();
-    const monitoringCriteria = fetchMonitoringCriteria();
-
-    if (!monitoringCriteria || data) return null;
-
-    const db = this.fetchDb();
-    if (!db) return;
-
-    const TABLE_NAME = monitoringCriteria.tablename
-    const columns = Object.keys(data[0]);
-    
-    const createTableSql = `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${columns.join(', ')})`;
-    
-    await db.run(createTableSql);
-    
-    const insertSql = `INSERT INTO ${TABLE_NAME} (${columns.join(', ')}) VALUES `;
-    
-    const valuesSql = data.map(
-      (row) => `(${columns.map((column) => `'${row[column]}'`).join(', ')})`
-    ).join(', ');
-
-    await db.run(`${insertSql} ${valuesSql}`);
-
-    db.close();
-  }
 
   handler = (evt, action) => {
     switch (action.type) {
@@ -133,6 +102,4 @@ class InternalDb {
   };
 }
 
-const internalDb = new InternalDb();
-export default internalDb;
-
+export default InternalDb;

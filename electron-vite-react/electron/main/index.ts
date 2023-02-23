@@ -3,7 +3,7 @@ import { release } from 'node:os'
 import { join } from 'node:path'
 import externalDbActionsHandler from './externalDb.js';
 import appDataActionsHandler from './appData.js';
-import internalDb from './internalDb.js';
+import InternalDb from './internalDb.js';
 import monitor from './monitor.js';
 
 // The built directory structure
@@ -43,10 +43,11 @@ let win: BrowserWindow | null = null
 const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
+
 const appDataPath = app.getPath('appData');
 const internalDbPath = join(appDataPath, '/internaldb/')
-internalDb.setPath(internalDbPath);
-console.log(internalDbPath)
+const internalDb = new InternalDb(internalDbPath); 
+
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
