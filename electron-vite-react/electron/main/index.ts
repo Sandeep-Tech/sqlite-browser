@@ -44,7 +44,7 @@ const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
 const appDataPath = app.getPath('appData');
-const internalDbPath = join(appDataPath, '/internaldb/internal.db')
+const internalDbPath = join(appDataPath, '/internaldb/')
 const internalDb = new InternalDb(internalDbPath); 
 
 async function createWindow() {
