@@ -1,14 +1,12 @@
+import { selectAllFromChoosenTable as selectAllFromChoosenTableInExtDb } from "./externalDb";
+import internalDb from "./internalDb";
+
 class Monitor {
-  constructor() {
+  constructor() {}
 
-  }
-
-  monitor() {
-    // 1. check for config
-    // 3. check for monitoring criteria
-    // 2. connect to the external db
-    // 4. check if the table criteria.tablename exists in external db
-    // 5. fetch this info (criteria.tablename in config.servername) from the internal db
+  async monitor() {
+    const tableDataFromExtDb = await selectAllFromChoosenTableInExtDb();
+    internalDb.saveToChoosenTable(tableDataFromExtDb);
   }
 }
 
