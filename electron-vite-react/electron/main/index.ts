@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import externalDbActionsHandler from './externalDb.js';
 import appDataActionsHandler from './appData.js';
 import InternalDb from './internalDb.js';
+import monitor from './monitor.js';
 
 // The built directory structure
 //
@@ -87,6 +88,7 @@ app.whenReady().then(
     ipcMain.handle('internal-db', internalDb.handler);
     ipcMain.handle('external-db', externalDbActionsHandler);
     ipcMain.handle('app-data', appDataActionsHandler);
+    monitor();
     createWindow();
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
