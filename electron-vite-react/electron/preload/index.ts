@@ -137,6 +137,6 @@ contextBridge.exposeInMainWorld('mainAPI', {
   saveDbConfig: handleSaveDbConfig,
   getMonitoringCriteria: () => ipcRenderer.invoke('app-data', { type: 'fetch-monitoring-criteria' }),
   saveMonitoringCriteria: saveMonitoringCriteria,
-  fetchTable: () => ipcRenderer.invoke('internal-db', { type: 'fetch-table' }),
+  handleTableUpdate: (callback) => ipcRenderer.on('table-update', callback),
 });
 

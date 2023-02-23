@@ -48,11 +48,13 @@ function MonitorContent({ monitoringCriteria }) {
     await window.mainAPI.saveMonitoringCriteria(form.values);
   });
 
-
-  const fetchTable = () => {
-    // send a msg to the backend to fetch the table
-    // window.mainAPI.fetchTable();
-  };
+  useEffect(() => {
+    window.mainAPI.handleTableUpdate(
+      (updatedTable) => {
+        console.log(updatedTable);
+      }
+    );
+  }, []);
 
   useEffect(() => {
     if (!monitoringCriteria) return;

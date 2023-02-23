@@ -15,7 +15,7 @@ class InternalDb {
 
   setPath = (path) => {
     this.path = path;
-  }
+  };
 
   doesRootPathExist = () => {
     try {
@@ -26,7 +26,7 @@ class InternalDb {
       console.error(err);
       return null;
     }
-  }
+  };
 
   doesDbExist = () => {
     try {
@@ -38,7 +38,7 @@ class InternalDb {
       console.error(err);
       return null;
     }
-  }
+  };
 
   createRootPath = () => {
     fs.mkdir(
@@ -54,7 +54,7 @@ class InternalDb {
         }
       },
     );
-  }
+  };
 
   fetchDb = () => {
     const createDbObj = () => {
@@ -78,22 +78,21 @@ class InternalDb {
     }
 
     return createDbObj();
-  }
+  };
 
-  fetchTable = () => {
-    const db = this.fetchDb();
+  fetchTable = async () => {
+    const db = await this.fetchDb();
     const monitoringCriteria = fetchMonitoringCriteria();
 
     if (db && monitoringCriteria) {
       const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
-      db.all(selectStmt, [], (err, rows) => {
+      await db.all(selectStmt, [], (err, rows) => {
         db.close();
         if (err) {
           console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
           console.error(err);
           return null;
         }
-        console.log(rows);
         return rows;
       });
     }
@@ -111,10 +110,12 @@ class InternalDb {
     const columns = Object.keys(data[0]);
     
     const createTableSql = `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${columns.join(', ')})`;
-    
     await db.run(createTableSql);
     
-    const insertSql = `INSERT INTO ${TABLE_NAME} (${columns.join(', ')}) VALUES `;
+    const deleteTableRowsSql = `DELETE FROM ${TABLE_NAME}`;
+    await db.run(deleteTableRowsSql);
+    
+    const insertSql = `INSERT INTO ${TABLE_NAME} (${columns.join(', ')}) VALUES`;
     
     const valuesSql = data.map(
       (row) => `(${columns.map((column) => `'${row[column]}'`).join(', ')})`
@@ -123,7 +124,7 @@ class InternalDb {
     await db.run(`${insertSql} ${valuesSql}`);
 
     db.close();
-  }
+  };
 
   handler = (evt, action) => {
     switch (action.type) {
