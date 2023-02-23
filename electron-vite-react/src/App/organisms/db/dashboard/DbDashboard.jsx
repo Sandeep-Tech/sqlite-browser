@@ -50,8 +50,8 @@ function MonitorContent({ monitoringCriteria }) {
 
   useEffect(() => {
     window.mainAPI.handleTableUpdate(
-      (updatedTable) => {
-        console.log(updatedTable);
+      (_event, args) => {
+        console.log(args);
       }
     );
   }, []);
@@ -60,7 +60,6 @@ function MonitorContent({ monitoringCriteria }) {
     if (!monitoringCriteria) return;
     form.setValues(monitoringCriteria);
 
-    fetchTable();
   }, [monitoringCriteria]);
 
   const renderMonitoringCriteriaForm = () => (
