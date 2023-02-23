@@ -100,13 +100,12 @@ class InternalDb {
   };
 
   saveToChoosenTable = async (data) => {
-    const externalDbConfig = fetchExternalDbConfig();
     const monitoringCriteria = fetchMonitoringCriteria();
 
-    if (!monitoringCriteria || data) return null;
+    if (!monitoringCriteria || !data) return null;
 
     const db = this.fetchDb();
-    if (!db) return;
+    if (!db) return null;
 
     const TABLE_NAME = monitoringCriteria.tablename
     const columns = Object.keys(data[0]);
