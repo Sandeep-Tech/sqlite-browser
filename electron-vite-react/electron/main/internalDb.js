@@ -82,13 +82,11 @@ class InternalDb {
     const monitoringCriteria = fetchMonitoringCriteria();
 
     if (db && monitoringCriteria) {
-      // console.log(monitoringCriteria);
-      // console.log(db);
-
       // use a meta table to determine with current extrnal db config that the table in sqlite is the same
       const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
       db.all(selectStmt, [], (err, rows) => {
         if (err) {
+          console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
           console.error(err);
         }
         // process rows
