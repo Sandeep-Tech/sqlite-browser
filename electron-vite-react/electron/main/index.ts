@@ -88,12 +88,11 @@ app.whenReady().then(
     ipcMain.handle('external-db', externalDbActionsHandler);
     ipcMain.handle('app-data', appDataActionsHandler);
     monitor.monitor();
-    monitor.setBroadcaster(
-      (data) => {
-        win?.webContents.send('table-update', { data });
-      }
-    );
+    monitor.setBroadcaster((data) => {
+      win?.webContents.send('table-update', { data });
+    });
     createWindow();
+
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
       if (allWindows.length) {
