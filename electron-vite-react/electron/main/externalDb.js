@@ -1,5 +1,5 @@
 import  sql from 'mssql';
-import { fetchExternalDbConfig, fetchMonitoringCriteria } from './appData';
+import { fetchExternalDbConfig } from './appData';
 
 class ExternalDb {
   constructor() {
@@ -77,27 +77,6 @@ class ExternalDb {
     if (this.connection) this.connection.close();
   }
 
-  selectAllFromChoosenTable = async () => {
-    if (!this.config) {
-      console.error(`Error: Unable to fetch table ${tablename}, external server not configured`);
-      return null;
-    }
-
-    const monitoringCriteria = fetchMonitoringCriteria();
-    if (monitoringCriteria && await this.connect()) {
-      const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
-
-      try {
-        const result = await this.connection.request().query(selectStmt);
-        return result.recordset;
-      } catch (error) {
-        console.error(`Error: Failed to fetch data from server: ${this.config.server} , table: ${monitoringCriteria.tablename}`);
-        return null;
-      }
-
-    }
-  }
-
   handler = async (evt, action) => {
     switch (action.type) {
       case 'set-config': return this.setConfig(action.data);
@@ -115,12 +94,6 @@ const init = () => {
   if (savedExternalDbConfig) externaldb.setConfig(savedExternalDbConfig);
 }
 init();
-
-const selectAllFromChoosenTable = externaldb.selectAllFromChoosenTable;
-
-export {
-  selectAllFromChoosenTable
-};
 
 // externalDbActionsHandler
 export default externaldb.handler;

@@ -1,3 +1,4 @@
+
 import { selectAllFromChoosenTable as selectAllFromChoosenTableInExtDb } from "./externalDb";
 import { fetchMonitoringCriteria } from "./appData";
 import internalDb from "./internalDb";
@@ -30,6 +31,7 @@ class Monitor {
         monitoringCriteria.queryrate * 1000,
       )
     }
+
   }
 }
 

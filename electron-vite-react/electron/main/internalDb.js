@@ -2,7 +2,7 @@ import sqlite3 from 'sqlite3';
 import path from 'path';
 import fs from 'fs';
 
-import { fetchMonitoringCriteria, fetchExternalDbConfig } from './appData';
+import { fetchMonitoringCriteria } from './appData';
 
 class InternalDb {
   constructor(path) {
@@ -11,11 +11,13 @@ class InternalDb {
     this.fetchDb = this.fetchDb.bind(this);
     this.fetchTable = this.fetchTable.bind(this);
     this.path = path;
+
   }
 
   setPath = (path) => {
     this.path = path;
   };
+
 
   doesRootPathExist = () => {
     try {
@@ -84,6 +86,7 @@ class InternalDb {
     const db = this.fetchDb();
     const monitoringCriteria = fetchMonitoringCriteria();
 
+
     return new Promise(
       (resolve, reject) => {
         if (!db) reject('failed to fetch table, unable to obtain DB object');
@@ -131,6 +134,7 @@ class InternalDb {
     db.close();
   };
 
+
   handler = (evt, action) => {
     switch (action.type) {
       case 'fetch-table': return this.fetchTable();
@@ -138,6 +142,4 @@ class InternalDb {
   };
 }
 
-const internalDb = new InternalDb();
-export default internalDb;
-
+export default InternalDb;
