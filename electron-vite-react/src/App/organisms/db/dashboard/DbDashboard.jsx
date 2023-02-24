@@ -12,6 +12,12 @@ import {
   FormSubmit,
   useFormState,
 } from '../../../atoms/form/Form';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 
 const sidebarItems = [{
   text: 'Sql Server Settings',
@@ -36,8 +42,32 @@ function Sidebar({ onSelect }) {
   );
 }
 
+
+function Table({ data, columns }) {
+  const table = useReactTable({
+    data: [],
+    columns: [],
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  console.log(table.getHeaderGroups());
+  console.log(table.getAllColumns());
+  return (
+    <div className="monitor__content__table">
+      table placeholder
+    </div>
+  );
+}
+
+const monitoringToolbarButtons = [{
+  text: 'Table',
+  type: 'table',
+}, {
+  text: 'Criteria',
+  type: 'criteria',
+}]
 function MonitorContent({ monitoringCriteria }) {
-  const [content, setContent] = useState(<div />);
+  const [selectedButton, setSelectedButton] = useState(monitoringToolbarButtons.find((b) => b.type === 'table'));
   const form = useFormState({ 
     defaultValues: {
       tablename: "",
@@ -47,23 +77,48 @@ function MonitorContent({ monitoringCriteria }) {
   form.useSubmit(async () => {
     await window.mainAPI.saveMonitoringCriteria(form.values);
   });
+  const [tableData, setTableData] = useState(null);
+
+  const columnHelper = createColumnHelper();
+
+  const prepTableData = (data) => {
+    if (data.length > 0) {
+      const preparedColumns = [];
+      
+      const refRow = data[0];
+
+      Object.keys(refRow).forEach(
+        (colName) => {
+          preparedColumns.push(
+            columnHelper.accessor(colName, {
+              cell: props => props.getValue()
+            })
+          )
+        }
+      );
+
+      setTableData({
+        columns: preparedColumns,
+        data,
+      });
+    };
+  }
 
   useEffect(() => {
-    window.mainAPI.handleTableUpdate(
-      (_event, args) => {
-        console.log(args);
-      }
-    );
+    const tableUpdateHandler = (_event, update) => {
+      update.data && prepTableData(update.data);
+    };
+    window.mainAPI.onTableUpdate(tableUpdateHandler);
+    return () => window.mainAPI.offTableUpdate(tableUpdateHandler);
   }, []);
 
   useEffect(() => {
     if (!monitoringCriteria) return;
     form.setValues(monitoringCriteria);
-
   }, [monitoringCriteria]);
 
   const renderMonitoringCriteriaForm = () => (
-    <div className="monitor-screen">
+    <>
       <p>Monitoring Criteria</p>
       <Form
         state={form}
@@ -85,36 +140,40 @@ function MonitorContent({ monitoringCriteria }) {
           <FormSubmit>Submit</FormSubmit>
         </div>
       </Form>
-    </div>
+    </>
   );
 
-  const renderMonitoredTable = () => {
-    return (
-      <div className="monitor__content__table">
-        table
-      </div>
-    )
+  const renderContent = () => {
+    switch (selectedButton.type) {
+      case 'table' : {
+        return (tableData ? <Table data={tableData.data} columns={tableData.columns} /> : <div />);
+      }
+      case 'criteria': {
+        return renderMonitoringCriteriaForm();
+      }
+      default: return <div />;
+    }
   }
 
   return (
     <div className="monitor__content">
       <div className="monitor__content__toolbar">
-        <Button
-          onClick={() => {
-            setContent(renderMonitoredTable())
-          }}
-        >
-          Table
-        </Button>
-        <Button
-          onClick={() => {
-            setContent(renderMonitoringCriteriaForm());
-          }}
-        >
-          Criteria
-        </Button>
+        {monitoringToolbarButtons.map(
+          (button) => (
+            <Button
+              onClick={() => {
+                setSelectedButton(button);
+              }}
+              key={button.text}
+            >
+              {button.text}
+            </Button>
+          ),
+        )}
       </div>
-      {content}
+      <div className="monitor-screen">
+        {renderContent()}
+      </div>
     </div>
   );
 }
@@ -244,3 +303,4 @@ function DbDashboard({}) {
 }
 
 export default DbDashboard;
+
