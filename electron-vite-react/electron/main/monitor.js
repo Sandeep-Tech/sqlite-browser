@@ -1,16 +1,39 @@
+
+import { selectAllFromChoosenTable as selectAllFromChoosenTableInExtDb } from "./externalDb";
+import { fetchMonitoringCriteria } from "./appData";
+import internalDb from "./internalDb";
+
 class Monitor {
   constructor() {
-
+    this.monitor = this.monitor.bind(this);
+    this.monitorIntervalId = null;
+    this.broadcaster = null;
   }
 
-  monitor() {
-    // 1. check for config
-    // 3. check for monitoring criteria
-    // 2. connect to the external db
-    // 4. check if the table criteria.tablename exists in external db
-    // 5. fetch this info (criteria.tablename in config.servername) from the internal db
+  setBroadcaster = (cb) => {
+    this.broadcaster = cb;
+  }
+
+  stopMonitor = () => {
+    if (this.monitorIntervalId) clearInterval(this.monitorIntervalId);
+  }
+
+  async monitor() {
+    const monitoringCriteria = fetchMonitoringCriteria();
+    if (monitoringCriteria) {
+      this.monitorIntervalId = setInterval(
+        async  () => {
+          const tableDataFromExtDb = await selectAllFromChoosenTableInExtDb();
+          await internalDb.saveToChoosenTable(tableDataFromExtDb);      
+          const table = await internalDb.fetchTable();
+          if (this.broadcaster) this.broadcaster(table);
+        },
+        monitoringCriteria.queryrate * 1000,
+      )
+    }
+
   }
 }
 
 const monitor = new Monitor();
-export default monitor.monitor;
+export default monitor;

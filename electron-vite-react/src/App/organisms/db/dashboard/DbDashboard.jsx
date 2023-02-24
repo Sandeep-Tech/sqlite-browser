@@ -12,6 +12,12 @@ import {
   FormSubmit,
   useFormState,
 } from '../../../atoms/form/Form';
+import {
+  createColumnHelper,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from '@tanstack/react-table'
 
 const sidebarItems = [{
   text: 'Sql Server Settings',
@@ -36,8 +42,56 @@ function Sidebar({ onSelect }) {
   );
 }
 
+
+function Table({ data, columns }) {
+  const table = useReactTable({
+    data: data,
+    columns: columns,
+    getCoreRowModel: getCoreRowModel(),
+  })
+
+  return (
+    <table className="monitor__content__table">
+      <thead>
+        {table.getHeaderGroups().map(headerGroup => (
+          <tr key={headerGroup.id}>
+            {headerGroup.headers.map(header => (
+              <th key={header.id}>
+                {header.isPlaceholder
+                  ? null
+                  : flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+              </th>
+            ))}
+          </tr>
+        ))}
+      </thead>
+      <tbody>
+        {table.getRowModel().rows.map(row => (
+          <tr key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <td key={cell.id}>
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+const monitoringToolbarButtons = [{
+  text: 'Table',
+  type: 'table',
+}, {
+  text: 'Criteria',
+  type: 'criteria',
+}]
 function MonitorContent({ monitoringCriteria }) {
-  const [content, setContent] = useState(<div />);
+  const [selectedButton, setSelectedButton] = useState(monitoringToolbarButtons.find((b) => b.type === 'table'));
   const form = useFormState({ 
     defaultValues: {
       tablename: "",
@@ -47,22 +101,49 @@ function MonitorContent({ monitoringCriteria }) {
   form.useSubmit(async () => {
     await window.mainAPI.saveMonitoringCriteria(form.values);
   });
+  const [tableData, setTableData] = useState(null);
 
+  const columnHelper = createColumnHelper();
 
-  const fetchTable = () => {
-    // send a msg to the backend to fetch the table
-    window.mainAPI.fetchTable();
-  };
+  const prepTableData = (data) => {
+    if (data.length > 0) {
+      const preparedColumns = [];
+      
+      const refRow = data[0];
+
+      Object.keys(refRow).forEach(
+        (colName) => {
+          preparedColumns.push(
+            columnHelper.accessor(colName, {
+              cell: props => props.getValue()
+            })
+          )
+        }
+      );
+
+      setTableData({
+        columns: preparedColumns,
+        data,
+      });
+    };
+  }
+
+  useEffect(() => {
+    const tableUpdateHandler = (_event, update) => {
+      update.data && prepTableData(update.data);
+    };
+    window.mainAPI.onTableUpdate(tableUpdateHandler);
+    return () => window.mainAPI.offTableUpdate(tableUpdateHandler);
+  }, []);
+
 
   useEffect(() => {
     if (!monitoringCriteria) return;
     form.setValues(monitoringCriteria);
-
-    fetchTable();
   }, [monitoringCriteria]);
 
   const renderMonitoringCriteriaForm = () => (
-    <div className="monitor-screen">
+    <>
       <p>Monitoring Criteria</p>
       <Form
         state={form}
@@ -84,36 +165,40 @@ function MonitorContent({ monitoringCriteria }) {
           <FormSubmit>Submit</FormSubmit>
         </div>
       </Form>
-    </div>
+    </>
   );
 
-  const renderMonitoredTable = () => {
-    return (
-      <div className="monitor__content__table">
-        table
-      </div>
-    )
+  const renderContent = () => {
+    switch (selectedButton.type) {
+      case 'table' : {
+        return (tableData ? <Table data={tableData.data} columns={tableData.columns} /> : <div />);
+      }
+      case 'criteria': {
+        return renderMonitoringCriteriaForm();
+      }
+      default: return <div />;
+    }
   }
 
   return (
     <div className="monitor__content">
       <div className="monitor__content__toolbar">
-        <Button
-          onClick={() => {
-            setContent(renderMonitoredTable())
-          }}
-        >
-          Table
-        </Button>
-        <Button
-          onClick={() => {
-            setContent(renderMonitoringCriteriaForm());
-          }}
-        >
-          Criteria
-        </Button>
+        {monitoringToolbarButtons.map(
+          (button) => (
+            <Button
+              onClick={() => {
+                setSelectedButton(button);
+              }}
+              key={button.text}
+            >
+              {button.text}
+            </Button>
+          ),
+        )}
       </div>
-      {content}
+      <div className="monitor-screen">
+        {renderContent()}
+      </div>
     </div>
   );
 }
@@ -243,3 +328,4 @@ function DbDashboard({}) {
 }
 
 export default DbDashboard;
+

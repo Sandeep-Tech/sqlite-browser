@@ -11,8 +11,13 @@ class InternalDb {
     this.fetchDb = this.fetchDb.bind(this);
     this.fetchTable = this.fetchTable.bind(this);
     this.path = path;
-    this.db = null;
+
   }
+
+  setPath = (path) => {
+    this.path = path;
+  };
+
 
   doesRootPathExist = () => {
     try {
@@ -23,7 +28,7 @@ class InternalDb {
       console.error(err);
       return null;
     }
-  }
+  };
 
   doesDbExist = () => {
     try {
@@ -35,7 +40,7 @@ class InternalDb {
       console.error(err);
       return null;
     }
-  }
+  };
 
   createRootPath = () => {
     fs.mkdir(
@@ -51,7 +56,7 @@ class InternalDb {
         }
       },
     );
-  }
+  };
 
   fetchDb = () => {
     const createDbObj = () => {
@@ -75,25 +80,60 @@ class InternalDb {
     }
 
     return createDbObj();
-  }
-
+  };
+  
   fetchTable = () => {
     const db = this.fetchDb();
     const monitoringCriteria = fetchMonitoringCriteria();
 
-    if (db && monitoringCriteria) {
-      // use a meta table to determine with current extrnal db config that the table in sqlite is the same
-      const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
-      db.all(selectStmt, [], (err, rows) => {
-        if (err) {
-          console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
-          console.error(err);
-        }
-        // process rows
-        console.log(rows);
-      });
-    }
+
+    return new Promise(
+      (resolve, reject) => {
+        if (!db) reject('failed to fetch table, unable to obtain DB object');
+        if (!monitoringCriteria) reject('failed to fetch table, monitoring criteria missing');
+
+        const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
+        db.all(selectStmt, [], (err, rows) => {
+          db.close();
+          if (err) {
+            console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
+            console.error(err);
+            reject('failed to fetch table from internal DB');
+          }
+          resolve(rows);
+        });
+      }
+    )
   };
+
+  saveToChoosenTable = async (data) => {
+    const monitoringCriteria = fetchMonitoringCriteria();
+
+    if (!monitoringCriteria || !data) return null;
+
+    const db = this.fetchDb();
+    if (!db) return null;
+
+    const TABLE_NAME = monitoringCriteria.tablename
+    const columns = Object.keys(data[0]);
+    
+    const createTableSql = `CREATE TABLE IF NOT EXISTS ${TABLE_NAME} (${columns.join(', ')})`;
+    await db.run(createTableSql);
+    
+    const deleteTableRowsSql = `DELETE FROM ${TABLE_NAME}`;
+    await db.run(deleteTableRowsSql);
+    
+    const insertSql = `INSERT INTO ${TABLE_NAME} (${columns.join(', ')}) VALUES`;
+    
+    const valuesSql = data.map(
+      (row) => `(${columns.map((column) => `'${row[column]}'`).join(', ')})`
+    ).join(', ');
+
+    await db.run(`${insertSql} ${valuesSql}`);
+
+    db.close();
+  };
+
 
   handler = (evt, action) => {
     switch (action.type) {

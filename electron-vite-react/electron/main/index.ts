@@ -46,7 +46,9 @@ const indexHtml = join(process.env.DIST, 'index.html')
 
 const appDataPath = app.getPath('appData');
 const internalDbPath = join(appDataPath, '/internaldb/')
-const internalDb = new InternalDb(internalDbPath); 
+
+internalDb.setPath(internalDbPath);
+
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -88,8 +90,12 @@ app.whenReady().then(
     ipcMain.handle('internal-db', internalDb.handler);
     ipcMain.handle('external-db', externalDbActionsHandler);
     ipcMain.handle('app-data', appDataActionsHandler);
-    monitor();
+    monitor.monitor();
+    monitor.setBroadcaster((data) => {
+      win?.webContents.send('table-update', { data });
+    });
     createWindow();
+
     app.on('activate', () => {
       const allWindows = BrowserWindow.getAllWindows()
       if (allWindows.length) {
@@ -112,6 +118,10 @@ app.on('second-instance', () => {
     if (win.isMinimized()) win.restore()
     win.focus()
   }
+})
+
+app.on('error', (error) => {
+  console.error(error);
 })
 
 // New window example arg: new windows url
