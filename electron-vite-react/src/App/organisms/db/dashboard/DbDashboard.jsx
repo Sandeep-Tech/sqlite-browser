@@ -136,7 +136,6 @@ function MonitorContent({ monitoringCriteria }) {
     return () => window.mainAPI.offTableUpdate(tableUpdateHandler);
   }, []);
 
-
   useEffect(() => {
     if (!monitoringCriteria) return;
     form.setValues(monitoringCriteria);
