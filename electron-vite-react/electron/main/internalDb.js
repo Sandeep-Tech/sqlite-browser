@@ -79,23 +79,28 @@ class InternalDb {
 
     return createDbObj();
   };
-
-  fetchTable = async () => {
-    const db = await this.fetchDb();
+  
+  fetchTable = () => {
+    const db = this.fetchDb();
     const monitoringCriteria = fetchMonitoringCriteria();
 
-    if (db && monitoringCriteria) {
-      const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
-      await db.all(selectStmt, [], (err, rows) => {
-        db.close();
-        if (err) {
-          console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
-          console.error(err);
-          return null;
-        }
-        return rows;
-      });
-    }
+    return new Promise(
+      (resolve, reject) => {
+        if (!db) reject('failed to fetch table, unable to obtain DB object');
+        if (!monitoringCriteria) reject('failed to fetch table, monitoring criteria missing');
+
+        const selectStmt = `SELECT * FROM ${monitoringCriteria.tablename}`;
+        db.all(selectStmt, [], (err, rows) => {
+          db.close();
+          if (err) {
+            console.error(`ERROR: Failed to fetch the table ${monitoringCriteria.tablename} from internal DB`)
+            console.error(err);
+            reject('failed to fetch table from internal DB');
+          }
+          resolve(rows);
+        });
+      }
+    )
   };
 
   saveToChoosenTable = async (data) => {
