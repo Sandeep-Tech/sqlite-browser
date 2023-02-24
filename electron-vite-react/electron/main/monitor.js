@@ -23,8 +23,7 @@ class Monitor {
       this.monitorIntervalId = setInterval(
         async  () => {
           const tableDataFromExtDb = await selectAllFromChoosenTableInExtDb();
-          await internalDb.saveToChoosenTable(tableDataFromExtDb);
-          // note to self: blocked here, I am supposed to receive the table here but isntead I am receiving undefined       
+          await internalDb.saveToChoosenTable(tableDataFromExtDb);      
           const table = await internalDb.fetchTable();
           if (this.broadcaster) this.broadcaster(table);
         },
